@@ -50,6 +50,7 @@ L = [3.0367   -0.0678;
    -0.0035   66.6272]; % output of kalman command
 
 % Initial Conditions
+[in1,in2,in3,in4,in5,in6,in7,in8]=anain;
 x_init = [in1;0;in3;0]; % we suppose the initial unknowns at zero
 x_prev = x_init; % previous state
 %*********************************************************************
