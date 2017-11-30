@@ -86,6 +86,12 @@ K = lqr(A,B,Q,R);  %(value used during the lab when the regulation worked)
 
 %%% KALMAN FILTER  (not finished yet)
 QN = 0.05;
-RN = eye(2);
+RN = 0.1*eye(2);
 NN = zeros(1,2);
 [KEST,L,P] = kalman(SYS,QN,RN);
+
+%%% OBSERVER SYSTEM
+A_kal = A - L*C;
+B_kal = [B L];
+sys_kal = ss(A_kal, B_kal, eye(4), 0*B_kal);
+%u_kalman = [u;y];
