@@ -19,9 +19,10 @@ lower_limit = -1.6;
 upper_dead_zone = 0.8; %dead zone
 lower_dead_zone = -0.7;
 
-reference = [4.313476562500000; % position
+[in1,in2,in3,in4,in5,in6,in7,in8]=anain;
+reference = [in1+1;%4.313476562500000; % position
              -0.024414062500000;  % velocity
-             5.156250000000000;  % angle (the sensor give this value when the pendulum is in the up position)
+             in3;%5.156250000000000;  % angle (the sensor give this value when the pendulum is in the up position)
              -0.014648437500000]; % angular velocity
 
 % Matrices of system around up position:
@@ -49,10 +50,13 @@ L = [3.0367   -0.0678;
    -0.0678   11.5434;
    -0.0035   66.6272]; % output of kalman command
 
+% Precompute matrices we will need to calculate the observer
+M = Tcycle*(A - B*K - L*C);
+N = Tcycle*B*K;
+O = Tcycle*L;
 % Initial Conditions
-[in1,in2,in3,in4,in5,in6,in7,in8]=anain;
-x_init = [in1;0;in3;0]; % we suppose the initial unknowns at zero
-x_prev = x_init; % previous state
+X_init = [in1;0;in3;0]; % we suppose the initial unknowns at zero
+X_prev = x_init; % previous state
 %*********************************************************************
 % Save in real time
 %*********************************************************************
@@ -64,11 +68,10 @@ while cond==1
 	Data(i,2)=in3; % angle
     measures = [in1;in3];
     
-    error_estimation = measures - C*x_prev; % error of the estimation
-    states = Tcycle*(A-B*K+eye(4))*x_prev + Tcycle*B*K*reference + Tcycle*L*error_estimation; % x_hat
-    x_prev = states;
+    X_hat = X_prev + M*X_prev + N*reference + O*measures;
+    X_prev = X_hat;
     
-    error = reference-states;
+    error = reference-X_hat;
     u = K*(error);
     
     % We add the dead zone and if the input is to high, we set the input to the limit value of the

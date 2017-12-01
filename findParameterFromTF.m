@@ -76,8 +76,8 @@ SYS = ss(A,B,C,D);
 %%% LQR
 Q = [1 0  0  0;   % position not very important
      0 1  0  0;   % velocity of the cart not very important
-     0 0  30 0;   % position of the pendulum important
-     0 0  0 100]; % the velocity of the pendulum in the up position must be equal to 0!
+     0 0  100 0;   % position of the pendulum important
+     0 0  0 40]; % the velocity of the pendulum in the up position must be equal to 0!
  
 R = 1;
 
@@ -94,4 +94,7 @@ NN = zeros(1,2);
 A_kal = A - L*C;
 B_kal = [B L];
 sys_kal = ss(A_kal, B_kal, eye(4), 0*B_kal);
+sys_kal_discrete = c2d(sys_kal, 0.01);
+syms z
+G = sys_kal_discrete.C * inv(z*eye(4) - sys_kal_discrete.A)*sys_kal_discrete.B + sys_kal_discrete.D
 %u_kalman = [u;y];
