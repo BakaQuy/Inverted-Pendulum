@@ -90,11 +90,9 @@ RN = 0.1*eye(2);
 NN = zeros(1,2);
 [KEST,L,P] = kalman(SYS,QN,RN);
 
-%%% OBSERVER SYSTEM
-A_kal = A - L*C;
-B_kal = [B L];
-sys_kal = ss(A_kal, B_kal, eye(4), 0*B_kal);
-sys_kal_discrete = c2d(sys_kal, 0.01);
-syms z
-G = sys_kal_discrete.C * inv(z*eye(4) - sys_kal_discrete.A)*sys_kal_discrete.B + sys_kal_discrete.D
+%%% OBSERVER SYSTEM (Disrete time)
+Ts = 0.01; % sample time
+A_kal = Ts*(A-L*C+(1/Ts)*eye(4));
+B_kal = Ts*[B L];
+sys_kal = ss(A_kal, B_kal, eye(4), 0*B_kal, Ts);
 %u_kalman = [u;y];
